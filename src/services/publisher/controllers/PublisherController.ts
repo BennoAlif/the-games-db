@@ -9,6 +9,10 @@ const createPublisher = async (req: Request, res: Response) => {
   try {
     const { name } = req.body;
 
+    if (name == null || name == '') {
+      return response(res, httpCodes.BAD_REQUEST, 'name cannot be empty', null);
+    }
+
     const newPublisher = await prisma.publisher.create({
       data: {
         name,
@@ -35,10 +39,46 @@ const getPublishers = async (req: Request, res: Response) => {
   }
 };
 
+const getPublisherById = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const selectedPublisher = await prisma.publisher.findFirst({
+      where: { id: parseInt(id) },
+      include: { games: true },
+    });
+
+    if (!selectedPublisher) {
+      return response(res, httpCodes.NOT_FOUND, 'Publisher not found', null);
+    }
+
+    return response(
+      res,
+      httpCodes.OK,
+      'Get publisher success!',
+      selectedPublisher,
+    );
+  } catch (error: any) {
+    return response(res, httpCodes.INTERNAL_SERVER_ERROR, error.message, null);
+  }
+};
+
 const updatePublisher = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const { name } = req.body;
+
+    if (name == null || name == '') {
+      return response(res, httpCodes.BAD_REQUEST, 'name cannot be empty', null);
+    }
+
+    const selectedPublisher = await prisma.publisher.findFirst({
+      where: { id: parseInt(id) },
+    });
+
+    if (!selectedPublisher) {
+      return response(res, httpCodes.NOT_FOUND, 'Publisher not found', null);
+    }
 
     const updatedPublisher = await prisma.publisher.update({
       where: { id: parseInt(id) },
@@ -60,6 +100,14 @@ const deletePublisher = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
+    const selectedPublisher = await prisma.publisher.findFirst({
+      where: { id: parseInt(id) },
+    });
+
+    if (!selectedPublisher) {
+      return response(res, httpCodes.NOT_FOUND, 'Publisher not found', null);
+    }
+
     const deletedPublisher = await prisma.publisher.delete({
       where: { id: parseInt(id) },
     });
@@ -77,6 +125,7 @@ const deletePublisher = async (req: Request, res: Response) => {
 
 export default {
   getPublishers,
+  getPublisherById,
   createPublisher,
   updatePublisher,
   deletePublisher,

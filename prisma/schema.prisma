@@ -19,7 +19,7 @@ model Publisher {
 model Game {
   id          Int @id   @default(autoincrement())
   title       String
-  imageUrl    String
+  imageUrl    String?   
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   publisher   Publisher @relation(fields: [publisherId], references: [id])

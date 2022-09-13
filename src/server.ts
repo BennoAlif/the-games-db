@@ -10,7 +10,7 @@ const app: Application = express();
 app.use(json());
 app.use(urlencoded({ extended: true }));
 app.use(cors());
-
+app.use('/images', express.static('images'));
 app.use(router);
 
 app.get('/', (req, res) => {
