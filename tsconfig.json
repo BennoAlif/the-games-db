@@ -4,7 +4,7 @@
     "module": "commonjs",
     "rootDir": "./src",
     "moduleResolution": "node",
-    "types": ["node"],
+    "types": ["mocha", "node"],
     "sourceMap": true,
     "outDir": "./dist",
     "esModuleInterop": true,
