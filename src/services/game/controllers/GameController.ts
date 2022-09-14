@@ -84,7 +84,7 @@ const updateGame = async (req: Request, res: Response) => {
       data: {
         title: title || undefined,
         imageUrl: imageUrl || undefined,
-        publisherId: publisherId || undefined,
+        publisher: { connect: { id: parseInt(publisherId) } },
       },
     });
 

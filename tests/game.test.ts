@@ -5,13 +5,13 @@ import app from '../src/server';
 chai.use(chaiHttp);
 chai.should();
 
-describe('Publishers', () => {
-  let publisherId: number;
+describe('Games', () => {
+  let gameId: number;
   describe('GET', () => {
-    it('Should get all publishers', (done) => {
+    it('Should get all games', (done) => {
       chai
         .request(app)
-        .get('/publishers')
+        .get('/games')
         .end((err, res) => {
           res.body.data.length.should.equal(3);
           res.should.have.status(200);
@@ -20,11 +20,11 @@ describe('Publishers', () => {
         });
     });
 
-    it('Should get a single publisher', (done) => {
-      const id: number = 1;
+    it('Should get a single game', (done) => {
+      const id: number = 4;
       chai
         .request(app)
-        .get(`/publishers/${id}`)
+        .get(`/games/${id}`)
         .end((err, res) => {
           res.body.data.id.should.equal(id);
           res.should.have.status(200);
@@ -33,11 +33,11 @@ describe('Publishers', () => {
         });
     });
 
-    it('Should error not found if publisher not found in database', (done) => {
+    it('Should error not found if game not found in database', (done) => {
       const id: number = 0;
       chai
         .request(app)
-        .get(`/publishers/${id}`)
+        .get(`/games/${id}`)
         .end((err, res) => {
           res.should.have.status(404);
           res.body.should.be.a('object');
@@ -47,28 +47,28 @@ describe('Publishers', () => {
   });
 
   describe('POST', () => {
-    it('Should craete a new publisher', (done) => {
+    it('Should craete a new game', (done) => {
       chai
         .request(app)
-        .post('/publishers')
-        .send({
-          name: 'new publisher',
-        })
+        .post('/games')
+        .field('title', 'new game')
+        .field('publisherId', 3)
+        .attach('image', './tests/wismilak.jpg', 'wismilak.jpg')
         .end((err, res) => {
-          publisherId = res.body.data.id;
-          res.body.data.name.should.equal('new publisher');
+          gameId = res.body.data.id;
+          res.body.data.title.should.equal('new game');
           res.should.have.status(201);
           res.body.should.be.a('object');
           done();
         });
     });
-    it('Should error bad request when name is empty', (done) => {
+    it('Should error bad request when title is empty', (done) => {
       chai
         .request(app)
-        .post('/publishers')
-        .send({
-          name: '',
-        })
+        .post('/games')
+        .field('title', '')
+        .field('publisherId', 3)
+        .attach('image', './tests/wismilak.jpg', 'wismilak.jpg')
         .end((err, res) => {
           res.should.have.status(400);
           res.body.should.be.a('object');
@@ -78,41 +78,29 @@ describe('Publishers', () => {
   });
 
   describe('PUT', () => {
-    it('Should update a publisher', (done) => {
+    it('Should update a selected game', (done) => {
       chai
         .request(app)
-        .put(`/publishers/${publisherId}`)
-        .send({
-          name: 'Updated publisher',
-        })
+        .put(`/games/${gameId}`)
+        .field('title', 'updated game')
+        .field('publisherId', 3)
+        .attach('image', './tests/wismilak.jpg', 'wismilak.jpg')
         .end((err, res) => {
           res.should.have.status(200);
-          res.body.data.name.should.equal('Updated publisher');
+          res.body.data.title.should.equal('updated game');
           res.body.should.be.a('object');
           done();
         });
     });
-    it('Should error bad request when name is empty', (done) => {
-      chai
-        .request(app)
-        .put(`/publishers/${publisherId}`)
-        .send({
-          name: '',
-        })
-        .end((err, res) => {
-          res.should.have.status(400);
-          res.body.should.be.a('object');
-          done();
-        });
-    });
-    it('Should error not found if publisher not found in database', (done) => {
+
+    it('Should error not found if selected game not found in database', (done) => {
       const id: number = 0;
       chai
         .request(app)
-        .put(`/publishers/${id}`)
-        .send({
-          name: 'Test publisher not found',
-        })
+        .put(`/games/${id}`)
+        .field('title', 'test game not found')
+        .field('publisherId', 3)
+        .attach('image', './tests/wismilak.jpg', 'wismilak.jpg')
         .end((err, res) => {
           res.should.have.status(404);
           res.body.should.be.a('object');
@@ -122,10 +110,10 @@ describe('Publishers', () => {
   });
 
   describe('DELETE', () => {
-    it('Should delete publisher', (done) => {
+    it('Should delete selected game', (done) => {
       chai
         .request(app)
-        .delete(`/publishers/${publisherId}`)
+        .delete(`/games/${gameId}`)
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.be.a('object');
@@ -135,7 +123,7 @@ describe('Publishers', () => {
     it('Should error not found if publisher not found in database', (done) => {
       chai
         .request(app)
-        .delete(`/publishers/${publisherId}`)
+        .delete(`/publishers/${gameId}`)
         .end((err, res) => {
           res.should.have.status(404);
           res.body.should.be.a('object');
